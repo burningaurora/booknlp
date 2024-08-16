@@ -16,7 +16,10 @@ class LitBankCoref:
 		base_model=re.sub(".model", "", base_model)
 
 		self.model = BERTCorefTagger(gender_cats=gender_cats, freeze_bert=True, base_model=base_model, pronominalCorefOnly=pronominalCorefOnly)
-		self.model.load_state_dict(torch.load(modelFile, map_location=device))
+
+		state_dict = torch.load(modelFile, map_location=device)
+		del state_dict["bert.embeddings.position_ids"]
+		self.model.load_state_dict(state_dict)
 		self.model.to(device)
 		self.model.eval()
 
@@ -180,5 +183,4 @@ class LitBankCoref:
 		max_ents=max(len(ent) for ent in ents)
 
 		return sentences, ents, max_words, max_ents
-
 
